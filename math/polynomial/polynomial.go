@@ -33,6 +33,8 @@ func New(coeffs []group.Scalar) (p Polynomial) {
 	return
 }
 
+// Degree returns the degree of the polynomial. The zero polynomial has degree
+// equal to -1.
 func (p Polynomial) Degree() int {
 	i := len(p.c) - 1
 	for i > 0 && p.c[i].IsZero() {
@@ -41,6 +43,7 @@ func (p Polynomial) Degree() int {
 	return i
 }
 
+// Evaluate returns the evaluation of p on x.
 func (p Polynomial) Evaluate(x group.Scalar) group.Scalar {
 	px := x.Group().NewScalar()
 	if l := len(p.c); l != 0 {
@@ -51,6 +54,16 @@ func (p Polynomial) Evaluate(x group.Scalar) group.Scalar {
 		}
 	}
 	return px
+}
+
+// Coefficients returns a deep-copy of the polynomial's coefficients in
+// ascending order with respect to the degree.
+func (p Polynomial) Coefficients() []group.Scalar {
+	c := make([]group.Scalar, len(p.c))
+	for i := range p.c {
+		c[i] = p.c[i].Copy()
+	}
+	return c
 }
 
 // LagrangePolynomial stores a Lagrange polynomial over the set of scalars of a group.
