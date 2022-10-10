@@ -56,14 +56,13 @@ func (p Polynomial) Evaluate(x group.Scalar) group.Scalar {
 	return px
 }
 
-// Coefficients returns a deep-copy of the polynomial's coefficients in
-// ascending order with respect to the degree.
-func (p Polynomial) Coefficients() []group.Scalar {
-	c := make([]group.Scalar, len(p.c))
-	for i := range p.c {
-		c[i] = p.c[i].Copy()
+// Coefficient returns a deep-copy of the n-th polynomial's coefficient.
+// Note coefficients are sorted in ascending order with respect to the degree.
+func (p Polynomial) Coefficient(n uint) group.Scalar {
+	if int(n) >= len(p.c) {
+		panic("polynomial: invalid index for coefficient")
 	}
-	return c
+	return p.c[n].Copy()
 }
 
 // LagrangePolynomial stores a Lagrange polynomial over the set of scalars of a group.
