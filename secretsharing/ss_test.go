@@ -14,11 +14,11 @@ func TestSecretSharing(tt *testing.T) {
 	t := uint(2)
 	n := uint(5)
 
-	s, err := secretsharing.NewShamirSecretSharing(g, t, n)
-	test.CheckNoErr(tt, err, "failed to create Shamir secret sharing")
+	s := secretsharing.NewShamirSecretSharing(t)
 
 	want := g.RandomScalar(rand.Reader)
-	shares := s.Shard(rand.Reader, want)
+	shares, err := s.Shard(rand.Reader, want, n)
+	test.CheckNoErr(tt, err, "failed to shard a secret")
 	test.CheckOk(len(shares) == int(n), "bad num shares", tt)
 
 	tt.Run("subsetSize", func(ttt *testing.T) {
@@ -43,11 +43,11 @@ func TestVerifiableSecretSharing(tt *testing.T) {
 	t := uint(3)
 	n := uint(5)
 
-	vs, err := secretsharing.NewFeldmanSecretSharing(g, t, n)
-	test.CheckNoErr(tt, err, "failed to create Feldman secret sharing")
+	vs := secretsharing.NewFeldmanSecretSharing(t)
 
 	want := g.RandomScalar(rand.Reader)
-	shares, com := vs.Shard(rand.Reader, want)
+	shares, com, err := vs.Shard(rand.Reader, want, n)
+	test.CheckNoErr(tt, err, "failed to shard a secret")
 	test.CheckOk(len(shares) == int(n), "bad num shares", tt)
 	test.CheckOk(len(com) == int(t+1), "bad num commitments", tt)
 
@@ -76,6 +76,7 @@ func TestVerifiableSecretSharing(tt *testing.T) {
 	tt.Run("badShares", func(ttt *testing.T) {
 		badShares := make([]secretsharing.Share, len(shares))
 		for i := range shares {
+			badShares[i].ID = shares[i].ID.Copy()
 			badShares[i].Value = shares[i].Value.Copy()
 			badShares[i].Value.SetUint64(9)
 		}
@@ -103,13 +104,13 @@ func BenchmarkSecretSharing(b *testing.B) {
 	t := uint(3)
 	n := uint(5)
 
-	s, _ := secretsharing.NewShamirSecretSharing(g, t, n)
+	s := secretsharing.NewShamirSecretSharing(t)
 	want := g.RandomScalar(rand.Reader)
-	shares := s.Shard(rand.Reader, want)
+	shares, _ := s.Shard(rand.Reader, want, n)
 
 	b.Run("Shard", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			s.Shard(rand.Reader, want)
+			_, _ = s.Shard(rand.Reader, want, n)
 		}
 	})
 
@@ -125,13 +126,13 @@ func BenchmarkVerifiableSecretSharing(b *testing.B) {
 	t := uint(3)
 	n := uint(5)
 
-	vs, _ := secretsharing.NewFeldmanSecretSharing(g, t, n)
+	vs := secretsharing.NewFeldmanSecretSharing(t)
 	want := g.RandomScalar(rand.Reader)
-	shares, com := vs.Shard(rand.Reader, want)
+	shares, com, _ := vs.Shard(rand.Reader, want, n)
 
 	b.Run("Shard", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			vs.Shard(rand.Reader, want)
+			_, _, _ = vs.Shard(rand.Reader, want, n)
 		}
 	})
 

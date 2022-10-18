@@ -21,7 +21,6 @@
 package secretsharing
 
 import (
-	"errors"
 	"fmt"
 	"io"
 
@@ -31,54 +30,46 @@ import (
 
 // Share represents a share of a secret.
 type Share struct {
-	ID    uint64       // ID uniquely identifies a share in a secret sharing instance.
-	Value group.Scalar // Value stores the share generated from a secret sharing instance.
+	// ID uniquely identifies a share in a secret sharing instance.
+	ID group.Scalar
+	// Value stores the share generated from a secret sharing instance.
+	Value group.Scalar
 }
 
 type SecretSharing struct {
-	g    group.Group
-	t, n uint
+	t uint // t is the threshold.
 }
 
 // NewShamirSecretSharing implements a (t,n) Shamir's secret sharing.
 // A (t,n) secret sharing allows to split a secret into n shares, such that the
-// secret can be only recovered from any subset of t+1 shares. Returns an error
-// if 0 <= t < n does not hold.
-func NewShamirSecretSharing(g group.Group, t, n uint) (SecretSharing, error) {
-	if t >= n {
-		return SecretSharing{}, errors.New("secretsharing: bad parameters")
-	}
-	return SecretSharing{g: g, t: t, n: n}, nil
-}
+// secret can be only recovered from any subset of t+1 shares.
+func NewShamirSecretSharing(t uint) SecretSharing { return SecretSharing{t} }
 
-// Params returns the t and n parameters of the secret sharing.
-func (s SecretSharing) Params() (t, n uint) { return s.t, s.n }
-
-func (s SecretSharing) polyFromSecret(rnd io.Reader, secret group.Scalar) (p polynomial.Polynomial) {
+func (s SecretSharing) polyFromSecret(rnd io.Reader, secret group.Scalar) polynomial.Polynomial {
 	c := make([]group.Scalar, s.t+1)
-	for i := 1; i < len(c); i++ {
-		c[i] = s.g.RandomScalar(rnd)
-	}
+	g := secret.Group()
 	c[0] = secret.Copy()
+	for i := 1; i < len(c); i++ {
+		c[i] = g.RandomScalar(rnd)
+	}
 	return polynomial.New(c)
 }
 
-func (s SecretSharing) generateShares(poly polynomial.Polynomial) []Share {
-	shares := make([]Share, s.n)
-	x := s.g.NewScalar()
-	for i := range shares {
-		id := i + 1
-		x.SetUint64(uint64(id))
-		shares[i].ID = uint64(id)
-		shares[i].Value = poly.Evaluate(x)
+// Shard splits the secret into n shares.
+func (s SecretSharing) Shard(rnd io.Reader, secret group.Scalar, n uint) ([]Share, error) {
+	if n <= s.t {
+		return nil, errThreshold(s.t, n)
 	}
 
-	return shares
-}
+	g := secret.Group()
+	poly := s.polyFromSecret(rnd, secret)
+	shares := make([]Share, n)
+	for i := range shares {
+		id := g.NewScalar().SetUint64(uint64(i + 1))
+		shares[i] = Share{ID: id, Value: poly.Evaluate(id)}
+	}
 
-// Shard splits the secret into n shares.
-func (s SecretSharing) Shard(rnd io.Reader, secret group.Scalar) []Share {
-	return s.generateShares(s.polyFromSecret(rnd, secret))
+	return shares, nil
 }
 
 // Recover returns the secret provided more than t shares are given. Returns an
@@ -86,20 +77,18 @@ func (s SecretSharing) Shard(rnd io.Reader, secret group.Scalar) []Share {
 // maximum number of shares.
 func (s SecretSharing) Recover(shares []Share) (group.Scalar, error) {
 	if l := len(shares); l <= int(s.t) {
-		return nil, fmt.Errorf("secretsharing: does not reach the threshold %v with %v shares", s.t, l)
-	} else if l > int(s.n) {
-		return nil, fmt.Errorf("secretsharing: %v shares above max number of shares %v", l, s.n)
+		return nil, errThreshold(s.t, uint(l))
 	}
 
 	x := make([]group.Scalar, s.t+1)
 	px := make([]group.Scalar, s.t+1)
 	for i := range shares[:s.t+1] {
-		x[i] = s.g.NewScalar().SetUint64(shares[i].ID)
+		x[i] = shares[i].ID
 		px[i] = shares[i].Value
 	}
 
 	l := polynomial.NewLagrangePolynomial(x, px)
-	zero := s.g.NewScalar()
+	zero := shares[0].ID.Group().NewScalar()
 
 	return l.Evaluate(zero), nil
 }
@@ -110,31 +99,33 @@ type VerifiableSecretSharing struct{ s SecretSharing }
 
 // NewFeldmanSecretSharing implements a (t,n) Feldman's verifiable secret
 // sharing. A (t,n) secret sharing allows to split a secret into n shares, such
-// that the secret can be only recovered from any subset of t+1 shares. This
-// method is verifiable because once the shares and the secret are committed
-// during sharding, one can later verify whether the share was generated
-// honestly. Returns an error if 0 < t <= n does not hold.
-func NewFeldmanSecretSharing(g group.Group, t, n uint) (VerifiableSecretSharing, error) {
-	s, err := NewShamirSecretSharing(g, t, n)
-	return VerifiableSecretSharing{s}, err
-}
-
-// Params returns the t and n parameters of the secret sharing.
-func (v VerifiableSecretSharing) Params() (t, n uint) { return v.s.Params() }
+// that the secret can be only recovered from any subset of t+1 shares. It's
+// verifiable as it allows checking whether a share is part of a secret committed
+// during sharding.
+func NewFeldmanSecretSharing(t uint) (v VerifiableSecretSharing) { v.s.t = t; return }
 
 // Shard splits the secret into n shares, and also returns a commitment to both
 // the secret and the shares. The ShareCommitment must be sent to each party
 // so each party can verify its share is correct. Sharding a secret more
 // than once produces ShareCommitments with the same first entry.
-func (v VerifiableSecretSharing) Shard(rnd io.Reader, secret group.Scalar) ([]Share, SharesCommitment) {
-	poly := v.s.polyFromSecret(rnd, secret)
-	shares := v.s.generateShares(poly)
-	shareComs := make(SharesCommitment, poly.Degree()+1)
-	for i := range shareComs {
-		shareComs[i] = v.s.g.NewElement().MulGen(poly.Coefficient(uint(i)))
+func (v VerifiableSecretSharing) Shard(rnd io.Reader, secret group.Scalar, n uint) ([]Share, SharesCommitment, error) {
+	if n <= v.s.t {
+		return nil, nil, errThreshold(v.s.t, n)
 	}
 
-	return shares, shareComs
+	g := secret.Group()
+	poly := v.s.polyFromSecret(rnd, secret)
+	shares := make([]Share, n)
+	for i := range shares {
+		id := g.NewScalar().SetUint64(uint64(i + 1))
+		shares[i] = Share{ID: id, Value: poly.Evaluate(id)}
+	}
+	shareComs := make(SharesCommitment, poly.Degree()+1)
+	for i := range shareComs {
+		shareComs[i] = g.NewElement().MulGen(poly.Coefficient(uint(i)))
+	}
+
+	return shares, shareComs, nil
 }
 
 // Verify returns true if a share was produced by sharding a secret. It uses
@@ -145,15 +136,14 @@ func (v VerifiableSecretSharing) Verify(s Share, c SharesCommitment) bool {
 		return false
 	}
 
+	g := s.ID.Group()
 	lc := len(c) - 1
-	sum := v.s.g.NewElement().Set(c[lc])
-	x := v.s.g.NewScalar()
+	sum := g.NewElement().Set(c[lc])
 	for i := lc - 1; i >= 0; i-- {
-		x.SetUint64(s.ID)
-		sum.Mul(sum, x)
+		sum.Mul(sum, s.ID)
 		sum.Add(sum, c[i])
 	}
-	polI := v.s.g.NewElement().MulGen(s.Value)
+	polI := g.NewElement().MulGen(s.Value)
 	return polI.IsEqual(sum)
 }
 
@@ -162,4 +152,8 @@ func (v VerifiableSecretSharing) Verify(s Share, c SharesCommitment) bool {
 // than the maximum number of shares (n).
 func (v VerifiableSecretSharing) Recover(shares []Share) (group.Scalar, error) {
 	return v.s.Recover(shares)
+}
+
+var errThreshold = func(t, n uint) error {
+	return fmt.Errorf("secretsharing: number of shares (n=%v) must be above the threshold (t=%v)", n, t)
 }
