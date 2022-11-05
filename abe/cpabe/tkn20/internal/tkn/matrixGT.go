@@ -3,6 +3,7 @@ package tkn
 import (
 	"encoding/binary"
 	"fmt"
+	"io"
 
 	pairing "github.com/cloudflare/circl/ecc/bls12381"
 )
@@ -172,8 +173,8 @@ func newMatrixGT(r int, c int) *matrixGT {
 	return ret
 }
 
-func randomMatrixGT(r int, c int) (*matrixGT, error) {
-	a, err := randomMatrixZp(r, c)
+func randomMatrixGT(rand io.Reader, r int, c int) (*matrixGT, error) {
+	a, err := randomMatrixZp(rand, r, c)
 	if err != nil {
 		return nil, err
 	}

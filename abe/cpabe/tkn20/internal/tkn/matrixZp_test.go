@@ -1,6 +1,7 @@
 package tkn
 
 import (
+	"crypto/rand"
 	"testing"
 
 	pairing "github.com/cloudflare/circl/ecc/bls12381"
@@ -8,18 +9,18 @@ import (
 )
 
 func TestSampleDlin(t *testing.T) {
-	_, err := sampleDlin()
+	_, err := sampleDlin(rand.Reader)
 	if err != nil {
 		t.Errorf("failure of dlin: %s", err)
 	}
 }
 
 func TestAdditionAndTranspose(t *testing.T) {
-	a, err := sampleDlin()
+	a, err := sampleDlin(rand.Reader)
 	if err != nil {
 		t.Errorf("failure of dlin: %s", err)
 	}
-	b, err := sampleDlin()
+	b, err := sampleDlin(rand.Reader)
 	if err != nil {
 		t.Errorf("failure of dlin: %s", err)
 	}
@@ -41,11 +42,11 @@ func TestAdditionAndTranspose(t *testing.T) {
 }
 
 func TestMultiplication(t *testing.T) {
-	a, err := sampleDlin()
+	a, err := sampleDlin(rand.Reader)
 	if err != nil {
 		t.Errorf("failure of diln: %s", err)
 	}
-	b, err := sampleDlin()
+	b, err := sampleDlin(rand.Reader)
 	if err != nil {
 		t.Errorf("failure of diln: %s", err)
 	}
@@ -63,7 +64,7 @@ func TestMultiplication(t *testing.T) {
 }
 
 func TestInverse(t *testing.T) {
-	a, err := sampleDlin()
+	a, err := sampleDlin(rand.Reader)
 	if err != nil {
 		t.Errorf("failure of diln: %s", err)
 	}
@@ -90,7 +91,7 @@ func TestInverse(t *testing.T) {
 }
 
 func TestInverse2x2(t *testing.T) {
-	A, err := randomMatrixZp(2, 2)
+	A, err := randomMatrixZp(rand.Reader, 2, 2)
 	if err != nil {
 		t.Fatalf("failure of random: %v", err)
 	}
@@ -159,7 +160,7 @@ func TestPRF(t *testing.T) {
 }
 
 func TestColsel(t *testing.T) {
-	m1, err := randomMatrixZp(17, 17)
+	m1, err := randomMatrixZp(rand.Reader, 17, 17)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -174,11 +175,11 @@ func TestColsel(t *testing.T) {
 }
 
 func TestAliasMul(t *testing.T) {
-	a, err := randomMatrixZp(4, 4)
+	a, err := randomMatrixZp(rand.Reader, 4, 4)
 	if err != nil {
 		t.Fatalf("error: %v", err)
 	}
-	b, err := randomMatrixZp(4, 4)
+	b, err := randomMatrixZp(rand.Reader, 4, 4)
 	if err != nil {
 		t.Fatalf("error: %v", err)
 	}
@@ -195,11 +196,11 @@ func TestAliasMul(t *testing.T) {
 }
 
 func TestAliasAddZp(t *testing.T) {
-	a, err := randomMatrixZp(4, 4)
+	a, err := randomMatrixZp(rand.Reader, 4, 4)
 	if err != nil {
 		t.Fatalf("error: %v", err)
 	}
-	b, err := randomMatrixZp(4, 4)
+	b, err := randomMatrixZp(rand.Reader, 4, 4)
 	if err != nil {
 		t.Fatalf("error: %v", err)
 	}
@@ -216,11 +217,11 @@ func TestAliasAddZp(t *testing.T) {
 }
 
 func TestAliasSubZp(t *testing.T) {
-	a, err := randomMatrixZp(4, 4)
+	a, err := randomMatrixZp(rand.Reader, 4, 4)
 	if err != nil {
 		t.Fatalf("error: %v", err)
 	}
-	b, err := randomMatrixZp(4, 4)
+	b, err := randomMatrixZp(rand.Reader, 4, 4)
 	if err != nil {
 		t.Fatalf("error: %v", err)
 	}
@@ -237,7 +238,7 @@ func TestAliasSubZp(t *testing.T) {
 }
 
 func TestMarshalZp(t *testing.T) {
-	a, err := randomMatrixZp(7, 9)
+	a, err := randomMatrixZp(rand.Reader, 7, 9)
 	if err != nil {
 		t.Fatal(err)
 	}

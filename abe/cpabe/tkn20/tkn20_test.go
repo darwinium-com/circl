@@ -65,11 +65,11 @@ func TestConcurrentDecryption(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			ct, err := pk.Encrypt(policy, msg)
+			ct, err := pk.Encrypt(rand.Reader, policy, msg)
 			if err != nil {
 				t.Fatalf("encryption failed: %s", err)
 			}
-			sk, err := msk.KeyGen(attrs[i])
+			sk, err := msk.KeyGen(rand.Reader, attrs[i])
 			if err != nil {
 				t.Fatalf("key generation failed: %s", err)
 			}
@@ -103,11 +103,11 @@ func TestEndToEndEncryption(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			ct, err := pk.Encrypt(policy, msg)
+			ct, err := pk.Encrypt(rand.Reader, policy, msg)
 			if err != nil {
 				t.Fatalf("encryption failed: %s", err)
 			}
-			sk, err := msk.KeyGen(attrs[i])
+			sk, err := msk.KeyGen(rand.Reader, attrs[i])
 			if err != nil {
 				t.Fatalf("key generation failed: %s", err)
 			}
@@ -193,7 +193,7 @@ func TestMarshal(t *testing.T) {
 
 	attrs := Attributes{}
 	attrs.FromMap(map[string]string{"occupation": "doctor", "country": "US", "age": "16"})
-	sk, err := msk.KeyGen(attrs)
+	sk, err := msk.KeyGen(rand.Reader, attrs)
 	if err != nil {
 		t.Fatal(err)
 	}

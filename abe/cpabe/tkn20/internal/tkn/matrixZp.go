@@ -1,9 +1,9 @@
 package tkn
 
 import (
-	"crypto/rand"
 	"encoding/binary"
 	"fmt"
+	"io"
 
 	pairing "github.com/cloudflare/circl/ecc/bls12381"
 	"golang.org/x/crypto/blake2b"
@@ -61,18 +61,18 @@ func (m *matrixZp) unmarshalBinary(data []byte) error {
 
 // sampleDlin samples from the distribution Dk.
 // See section 3.2 of the paper for details.
-func sampleDlin() (*matrixZp, error) {
+func sampleDlin(rand io.Reader) (*matrixZp, error) {
 	var ret matrixZp
 	ret.rows = 3
 	ret.cols = 2
 	ret.entries = make([]pairing.Scalar, 6)
-	err := ret.entries[0].Random(rand.Reader)
+	err := ret.entries[0].Random(rand)
 	if err != nil {
 		return nil, err
 	}
 	ret.entries[1].SetUint64(0)
 	ret.entries[2].SetUint64(0)
-	err = ret.entries[3].Random(rand.Reader)
+	err = ret.entries[3].Random(rand)
 	if err != nil {
 		return nil, err
 	}
@@ -82,10 +82,10 @@ func sampleDlin() (*matrixZp, error) {
 	return &ret, nil
 }
 
-func randomMatrixZp(r int, c int) (*matrixZp, error) {
+func randomMatrixZp(rand io.Reader, r int, c int) (*matrixZp, error) {
 	ret := newMatrixZp(r, c)
 	for i := 0; i < r*c; i++ {
-		err := ret.entries[i].Random(rand.Reader)
+		err := ret.entries[i].Random(rand)
 		if err != nil {
 			return nil, err
 		}

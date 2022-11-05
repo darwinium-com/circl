@@ -1,7 +1,6 @@
 package tkn
 
 import (
-	"crypto/rand"
 	"crypto/subtle"
 	"fmt"
 	"io"
@@ -65,12 +64,12 @@ func expandSeed(seed []byte) (id []byte, macKey []byte, err error) {
 	return
 }
 
-func DeriveAttributeKeysCCA(sp *SecretParams, attrs *Attributes) (*AttributesKey, error) {
+func DeriveAttributeKeysCCA(rand io.Reader, sp *SecretParams, attrs *Attributes) (*AttributesKey, error) {
 	realAttrs := transformAttrsBK(attrs)
-	return deriveAttributeKeys(sp, realAttrs)
+	return deriveAttributeKeys(rand, sp, realAttrs)
 }
 
-func EncryptCCA(public *PublicParams, policy *Policy, msg []byte) ([]byte, error) {
+func EncryptCCA(rand io.Reader, public *PublicParams, policy *Policy, msg []byte) ([]byte, error) {
 	seed := make([]byte, 16)
 	_, err := rand.Read(seed)
 	if err != nil {
@@ -86,7 +85,7 @@ func EncryptCCA(public *PublicParams, policy *Policy, msg []byte) ([]byte, error
 
 	encPolicy := policy.transformBK(numid)
 
-	header, encPoint, err := encapsulate(public, encPolicy)
+	header, encPoint, err := encapsulate(rand, public, encPolicy)
 	if err != nil {
 		return nil, err
 	}

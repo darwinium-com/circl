@@ -1,6 +1,7 @@
 package tkn
 
 import (
+	"crypto/rand"
 	"testing"
 )
 
@@ -11,11 +12,11 @@ func TestShare(t *testing.T) {
 			{Andgate, 0, 1, 3},
 		},
 	}
-	k, err := randomMatrixZp(1, 17)
+	k, err := randomMatrixZp(rand.Reader, 1, 17)
 	if err != nil {
 		t.Fatalf("error generating vector: %s", err)
 	}
-	res, err := f.share(k)
+	res, err := f.share(rand.Reader, k)
 	if err != nil {
 		t.Fatalf("error sharing: %s", err)
 	}

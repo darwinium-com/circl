@@ -1,19 +1,22 @@
 package tkn
 
-import "testing"
+import (
+	"crypto/rand"
+	"testing"
+)
 
 func TestRightMultLinearityG2(t *testing.T) {
-	zpMat1, err := randomMatrixZp(2, 3)
+	zpMat1, err := randomMatrixZp(rand.Reader, 2, 3)
 	if err != nil {
 		t.Fatal(err)
 	}
-	zpMat2, err := randomMatrixZp(2, 3)
+	zpMat2, err := randomMatrixZp(rand.Reader, 2, 3)
 	if err != nil {
 		t.Fatal(err)
 	}
 	zpMat1p2 := newMatrixZp(2, 3)
 	zpMat1p2.add(zpMat1, zpMat2)
-	a, err := randomMatrixG2(3, 2)
+	a, err := randomMatrixG2(rand.Reader, 3, 2)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -31,17 +34,17 @@ func TestRightMultLinearityG2(t *testing.T) {
 }
 
 func TestLeftMultLinearityG2(t *testing.T) {
-	zpMat1, err := randomMatrixZp(3, 3)
+	zpMat1, err := randomMatrixZp(rand.Reader, 3, 3)
 	if err != nil {
 		t.Fatal(err)
 	}
-	zpMat2, err := randomMatrixZp(3, 3)
+	zpMat2, err := randomMatrixZp(rand.Reader, 3, 3)
 	if err != nil {
 		t.Fatal(err)
 	}
 	zpMat1p2 := newMatrixZp(3, 3)
 	zpMat1p2.add(zpMat1, zpMat2)
-	a, err := randomMatrixG2(3, 2)
+	a, err := randomMatrixG2(rand.Reader, 3, 2)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -59,17 +62,17 @@ func TestLeftMultLinearityG2(t *testing.T) {
 }
 
 func TestLeftMultActionG2(t *testing.T) {
-	zpMat1, err := randomMatrixZp(3, 3)
+	zpMat1, err := randomMatrixZp(rand.Reader, 3, 3)
 	if err != nil {
 		t.Fatal(err)
 	}
-	zpMat2, err := randomMatrixZp(3, 3)
+	zpMat2, err := randomMatrixZp(rand.Reader, 3, 3)
 	if err != nil {
 		t.Fatal(err)
 	}
 	zpMat2m1 := newMatrixZp(3, 3)
 	zpMat2m1.mul(zpMat2, zpMat1)
-	a, err := randomMatrixG2(3, 2)
+	a, err := randomMatrixG2(rand.Reader, 3, 2)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -85,17 +88,17 @@ func TestLeftMultActionG2(t *testing.T) {
 }
 
 func TestRightMultActionG2(t *testing.T) {
-	zpMat1, err := randomMatrixZp(2, 2)
+	zpMat1, err := randomMatrixZp(rand.Reader, 2, 2)
 	if err != nil {
 		t.Fatal(err)
 	}
-	zpMat2, err := randomMatrixZp(2, 2)
+	zpMat2, err := randomMatrixZp(rand.Reader, 2, 2)
 	if err != nil {
 		t.Fatal(err)
 	}
 	zpMat1m2 := newMatrixZp(2, 2)
 	zpMat1m2.mul(zpMat1, zpMat2)
-	a, err := randomMatrixG2(3, 2)
+	a, err := randomMatrixG2(rand.Reader, 3, 2)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -111,11 +114,11 @@ func TestRightMultActionG2(t *testing.T) {
 }
 
 func TestExpG2(t *testing.T) {
-	a, err := randomMatrixZp(2, 2)
+	a, err := randomMatrixZp(rand.Reader, 2, 2)
 	if err != nil {
 		t.Fatal(err)
 	}
-	b, err := randomMatrixZp(2, 2)
+	b, err := randomMatrixZp(rand.Reader, 2, 2)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -133,7 +136,7 @@ func TestExpG2(t *testing.T) {
 }
 
 func TestMarshalG2(t *testing.T) {
-	a, err := randomMatrixG2(7, 9)
+	a, err := randomMatrixG2(rand.Reader, 7, 9)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -157,11 +160,11 @@ func TestMarshalG2(t *testing.T) {
 }
 
 func TestAliasLeftMultG2(t *testing.T) {
-	a, err := randomMatrixG2(4, 4)
+	a, err := randomMatrixG2(rand.Reader, 4, 4)
 	if err != nil {
 		t.Fatalf("error: %v", err)
 	}
-	b, err := randomMatrixZp(4, 4)
+	b, err := randomMatrixZp(rand.Reader, 4, 4)
 	if err != nil {
 		t.Fatalf("error: %v", err)
 	}
@@ -178,11 +181,11 @@ func TestAliasLeftMultG2(t *testing.T) {
 }
 
 func TestAliasRightMultG2(t *testing.T) {
-	a, err := randomMatrixG2(4, 4)
+	a, err := randomMatrixG2(rand.Reader, 4, 4)
 	if err != nil {
 		t.Fatalf("error: %v", err)
 	}
-	b, err := randomMatrixZp(4, 4)
+	b, err := randomMatrixZp(rand.Reader, 4, 4)
 	if err != nil {
 		t.Fatalf("error: %v", err)
 	}
@@ -199,11 +202,11 @@ func TestAliasRightMultG2(t *testing.T) {
 }
 
 func TestAliasAddG2(t *testing.T) {
-	a, err := randomMatrixG2(4, 4)
+	a, err := randomMatrixG2(rand.Reader, 4, 4)
 	if err != nil {
 		t.Fatalf("error: %v", err)
 	}
-	b, err := randomMatrixG2(4, 4)
+	b, err := randomMatrixG2(rand.Reader, 4, 4)
 	if err != nil {
 		t.Fatalf("error: %v", err)
 	}

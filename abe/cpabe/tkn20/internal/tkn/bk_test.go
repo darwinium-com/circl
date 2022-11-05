@@ -235,12 +235,12 @@ func TestEncryptionBk(t *testing.T) {
 		if err != nil {
 			t.Fatalf("error generating parameters: %s", err)
 		}
-		userKey, err := DeriveAttributeKeysCCA(secret, suite.a)
+		userKey, err := DeriveAttributeKeysCCA(rand.Reader, secret, suite.a)
 		if err != nil {
 			t.Fatalf("error generating Attribute keys: %s", err)
 		}
 
-		ciphertext, err := EncryptCCA(public, suite.p, msg)
+		ciphertext, err := EncryptCCA(rand.Reader, public, suite.p, msg)
 		if err != nil {
 			t.Fatalf("error encrypting: %s", err)
 		}
@@ -296,12 +296,12 @@ func BenchmarkTkDecryption(b *testing.B) {
 	if err != nil {
 		b.Fatalf("error generating parameters: %s", err)
 	}
-	userKey, err := DeriveAttributeKeysCCA(secret, benchAttrs)
+	userKey, err := DeriveAttributeKeysCCA(rand.Reader, secret, benchAttrs)
 	if err != nil {
 		b.Fatalf("error generating Attribute keys: %s", err)
 	}
 
-	ciphertext, err := EncryptCCA(public, benchPolicy, msg)
+	ciphertext, err := EncryptCCA(rand.Reader, public, benchPolicy, msg)
 	if err != nil {
 		b.Fatalf("error encrypting: %s", err)
 	}
@@ -322,7 +322,7 @@ func BenchmarkTkEncryption(b *testing.B) {
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, err := EncryptCCA(public, benchPolicy, msg)
+		_, err := EncryptCCA(rand.Reader, public, benchPolicy, msg)
 		if err != nil {
 			b.Fatalf("error encrypting: %s", err)
 		}
@@ -336,7 +336,7 @@ func BenchmarkTkDerivation(b *testing.B) {
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, err := DeriveAttributeKeysCCA(secret, benchAttrs)
+		_, err := DeriveAttributeKeysCCA(rand.Reader, secret, benchAttrs)
 		if err != nil {
 			b.Fatalf("error generating Attribute keys: %s", err)
 		}

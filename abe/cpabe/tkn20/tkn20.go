@@ -8,6 +8,7 @@
 package tkn20
 
 import (
+	cryptoRand "crypto/rand"
 	"io"
 
 	"github.com/cloudflare/circl/abe/cpabe/tkn20/internal/dsl"
@@ -30,8 +31,11 @@ func (p *PublicKey) Equal(p2 *PublicKey) bool {
 	return p.pp.Equal(&p2.pp)
 }
 
-func (p *PublicKey) Encrypt(policy Policy, msg []byte) ([]byte, error) {
-	return tkn.EncryptCCA(&p.pp, &policy.policy, msg)
+func (p *PublicKey) Encrypt(rand io.Reader, policy Policy, msg []byte) ([]byte, error) {
+	if rand == nil {
+		rand = cryptoRand.Reader
+	}
+	return tkn.EncryptCCA(rand, &p.pp, &policy.policy, msg)
 }
 
 type SystemSecretKey struct {
@@ -50,8 +54,11 @@ func (msk *SystemSecretKey) Equal(msk2 *SystemSecretKey) bool {
 	return msk.sp.Equal(&msk2.sp)
 }
 
-func (msk *SystemSecretKey) KeyGen(attrs Attributes) (AttributeKey, error) {
-	sk, err := tkn.DeriveAttributeKeysCCA(&msk.sp, &attrs.attrs)
+func (msk *SystemSecretKey) KeyGen(rand io.Reader, attrs Attributes) (AttributeKey, error) {
+	if rand == nil {
+		rand = cryptoRand.Reader
+	}
+	sk, err := tkn.DeriveAttributeKeysCCA(rand, &msk.sp, &attrs.attrs)
 	return AttributeKey{*sk}, err
 }
 
@@ -136,6 +143,9 @@ func (a *Attributes) FromMap(in map[string]string) {
 }
 
 func Setup(rand io.Reader) (PublicKey, SystemSecretKey, error) {
+	if rand == nil {
+		rand = cryptoRand.Reader
+	}
 	pp, sp, err := tkn.GenerateParams(rand)
 	return PublicKey{*pp}, SystemSecretKey{*sp}, err
 }

@@ -80,7 +80,7 @@ func Example() {
 	}
 
 	// encrypt the secret message for a given policy
-	ct, err := publicKey.Encrypt(policy, []byte(msgStr))
+	ct, err := publicKey.Encrypt(rand.Reader, policy, []byte(msgStr))
 	if err != nil {
 		log.Fatalf("%s", err)
 	}
@@ -91,8 +91,8 @@ func Example() {
 	rightAttrs := cpabe.Attributes{}
 	rightAttrs.FromMap(rightAttrsMap)
 
-	wrongSecretKey, _ := systemSecretKey.KeyGen(wrongAttrs)
-	rightSecretKey, _ := systemSecretKey.KeyGen(rightAttrs)
+	wrongSecretKey, _ := systemSecretKey.KeyGen(rand.Reader, wrongAttrs)
+	rightSecretKey, _ := systemSecretKey.KeyGen(rand.Reader, rightAttrs)
 
 	wrongSat := policy.Satisfaction(wrongAttrs)
 	if wrongSat {

@@ -13,12 +13,12 @@ func TestEncryptionSimple(t *testing.T) {
 			if err != nil {
 				t.Fatalf("error generating parameters: %s", err)
 			}
-			userKey, err := deriveAttributeKeys(secret, suite.a)
+			userKey, err := deriveAttributeKeys(rand.Reader, secret, suite.a)
 			if err != nil {
 				t.Fatalf("error generating attribute keys: %s", err)
 			}
 
-			header, shared, err := encapsulate(public, suite.p)
+			header, shared, err := encapsulate(rand.Reader, public, suite.p)
 			if err != nil {
 				t.Fatalf("error encrypting message: %s", err)
 			}
@@ -104,7 +104,7 @@ func TestMarshalAttributesKey(t *testing.T) {
 			Value: ToScalar(2),
 		},
 	}
-	a, err := deriveAttributeKeys(sp, attrs)
+	a, err := deriveAttributeKeys(rand.Reader, sp, attrs)
 	if err != nil {
 		t.Fatalf("error generating attribute keys: %s", err)
 	}
@@ -128,7 +128,7 @@ func TestMarshalAttributesKey(t *testing.T) {
 			Value: ToScalar(0),
 		},
 	}
-	c, err := deriveAttributeKeys(sp, cAttrs)
+	c, err := deriveAttributeKeys(rand.Reader, sp, cAttrs)
 	if err != nil {
 		t.Fatalf("error generating attribute keys: %s", err)
 	}
@@ -152,7 +152,7 @@ func TestEqualAttributesKey(t *testing.T) {
 			Value: ToScalar(4),
 		},
 	}
-	a, err := deriveAttributeKeys(sp, attrs)
+	a, err := deriveAttributeKeys(rand.Reader, sp, attrs)
 	if err != nil {
 		t.Fatalf("error generating attribute keys: %s", err)
 	}
@@ -167,7 +167,7 @@ func TestEqualAttributesKey(t *testing.T) {
 			Value: ToScalar(4),
 		},
 	}
-	b, err := deriveAttributeKeys(sp2, attrs2)
+	b, err := deriveAttributeKeys(rand.Reader, sp2, attrs2)
 	if err != nil {
 		t.Fatalf("error generating attribute keys: %s", err)
 	}
@@ -190,7 +190,7 @@ func TestEqualAttributesKey(t *testing.T) {
 	}
 
 	for k, v := range a.k3 {
-		c.k3[k], err = randomMatrixG1(v.rows, v.cols)
+		c.k3[k], err = randomMatrixG1(rand.Reader, v.rows, v.cols)
 		if err != nil {
 			t.Fatal(err)
 		}

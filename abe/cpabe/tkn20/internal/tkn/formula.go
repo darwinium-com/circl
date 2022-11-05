@@ -3,6 +3,7 @@ package tkn
 import (
 	"encoding/binary"
 	"fmt"
+	"io"
 )
 
 const (
@@ -234,7 +235,7 @@ func (f *Formula) satisfaction(available []match) ([]match, error) {
 // share distributes an input into shares for a secret sharing system
 // for the formula: the original vector can be recovered from shares
 // that satisfy the formula, by adding them all up.
-func (f *Formula) share(k *matrixZp) ([]*matrixZp, error) {
+func (f *Formula) share(rand io.Reader, k *matrixZp) ([]*matrixZp, error) {
 	err := f.toposort()
 	if err != nil {
 		return nil, err
@@ -247,7 +248,7 @@ func (f *Formula) share(k *matrixZp) ([]*matrixZp, error) {
 		gate := f.Gates[i]
 		switch gate.Class {
 		case Andgate:
-			shares[gate.In0], err = randomMatrixZp(k.rows, k.cols)
+			shares[gate.In0], err = randomMatrixZp(rand, k.rows, k.cols)
 			if err != nil {
 				return nil, err
 			}

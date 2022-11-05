@@ -4,7 +4,6 @@ package tkn
 
 import (
 	"bytes"
-	"crypto/rand"
 	"encoding/binary"
 	"fmt"
 	"io"
@@ -468,28 +467,25 @@ func (hdr *ciphertextHeader) unmarshalBinary(data []byte) error {
 	return nil
 }
 
-func GenerateParams(rnd io.Reader) (*PublicParams, *SecretParams, error) {
-	A, err := sampleDlin()
+func GenerateParams(rand io.Reader) (*PublicParams, *SecretParams, error) {
+	A, err := sampleDlin(rand)
 	if err != nil {
 		return nil, nil, err
 	}
-	Bbar, err := randomMatrixZp(4, 4)
+	Bbar, err := randomMatrixZp(rand, 4, 4)
 	if err != nil {
 		return nil, nil, err
 	}
-	W, err := randomMatrixZp(3, 4)
+	W, err := randomMatrixZp(rand, 3, 4)
 	if err != nil {
 		return nil, nil, err
 	}
-	k, err := randomMatrixZp(4, 1)
+	k, err := randomMatrixZp(rand, 4, 1)
 	if err != nil {
 		return nil, nil, err
 	}
 	prfKey := make([]byte, 16)
-	if rnd == nil {
-		rnd = rand.Reader
-	}
-	_, err = io.ReadFull(rnd, prfKey)
+	_, err = io.ReadFull(rand, prfKey)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -551,21 +547,21 @@ func max(in []int) int {
 
 // encapsulate creates a new ephemeral key and header that can be opened to it. This is
 // the transformation of an Elgamal like scheme to a KEM.
-func encapsulate(pp *PublicParams, policy *Policy) (*ciphertextHeader, *pairing.Gt, error) {
+func encapsulate(rand io.Reader, pp *PublicParams, policy *Policy) (*ciphertextHeader, *pairing.Gt, error) {
 	pi := policy.pi()
 	d := max(pi) + 1
 	ri := make([]*matrixZp, d)
-	r, err := randomMatrixZp(2, 1)
+	r, err := randomMatrixZp(rand, 2, 1)
 	if err != nil {
 		return nil, nil, err
 	}
 	for i := 0; i < d; i++ {
-		ri[i], err = randomMatrixZp(2, 1)
+		ri[i], err = randomMatrixZp(rand, 2, 1)
 		if err != nil {
 			return nil, nil, err
 		}
 	}
-	rshares, err := policy.F.share(r)
+	rshares, err := policy.F.share(rand, r)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -625,8 +621,8 @@ func encapsulate(pp *PublicParams, policy *Policy) (*ciphertextHeader, *pairing.
 	}, &c4mat.entries[0], nil
 }
 
-func deriveAttributeKeys(sp *SecretParams, attrs *Attributes) (*AttributesKey, error) {
-	s, err := randomMatrixZp(2, 1)
+func deriveAttributeKeys(rand io.Reader, sp *SecretParams, attrs *Attributes) (*AttributesKey, error) {
+	s, err := randomMatrixZp(rand, 2, 1)
 	if err != nil {
 		return nil, err
 	}
