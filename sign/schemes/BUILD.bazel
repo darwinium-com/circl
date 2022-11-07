@@ -1,0 +1,24 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "schemes",
+    srcs = ["schemes.go"],
+    importpath = "github.com/cloudflare/circl/sign/schemes",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//sign",
+        "//sign/ed25519",
+        "//sign/ed448",
+        "//sign/eddilithium2",
+        "//sign/eddilithium3",
+    ],
+)
+
+go_test(
+    name = "schemes_test",
+    srcs = ["schemes_test.go"],
+    deps = [
+        ":schemes",
+        "//sign",
+    ],
+)

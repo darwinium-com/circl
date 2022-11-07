@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "dleq",
+    srcs = ["dleq.go"],
+    importpath = "github.com/cloudflare/circl/zk/dleq",
+    visibility = ["//visibility:public"],
+    deps = ["//group"],
+)
+
+go_test(
+    name = "dleq_test",
+    srcs = ["dleq_test.go"],
+    deps = [
+        ":dleq",
+        "//group",
+        "//internal/test",
+    ],
+)

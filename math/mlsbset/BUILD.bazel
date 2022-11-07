@@ -1,0 +1,22 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "mlsbset",
+    srcs = [
+        "mlsbset.go",
+        "power.go",
+    ],
+    importpath = "github.com/cloudflare/circl/math/mlsbset",
+    visibility = ["//visibility:public"],
+    deps = ["//internal/conv"],
+)
+
+go_test(
+    name = "mlsbset_test",
+    srcs = ["mlsbset_test.go"],
+    deps = [
+        ":mlsbset",
+        "//internal/conv",
+        "//internal/test",
+    ],
+)

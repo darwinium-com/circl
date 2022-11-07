@@ -1,0 +1,18 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "frodo",
+    srcs = ["doc.go"],
+    importpath = "github.com/cloudflare/circl/kem/frodo",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "frodo_test",
+    srcs = ["kat_test.go"],
+    embed = [":frodo"],
+    deps = [
+        "//internal/nist",
+        "//kem/schemes",
+    ],
+)

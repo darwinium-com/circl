@@ -1,0 +1,38 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "common",
+    srcs = [
+        "aes.go",
+        "amd64.go",
+        "amd64.s",
+        "field.go",
+        "generic.go",
+        "ntt.go",
+        "pack.go",
+        "params.go",
+        "poly.go",
+        "stubs_amd64.go",
+    ],
+    importpath = "github.com/cloudflare/circl/sign/dilithium/internal/common",
+    visibility = ["//sign/dilithium:__subpackages__"],
+    deps = [
+        "//sign/dilithium/internal/common/params",
+    ] + select({
+        "@io_bazel_rules_go//go/platform:amd64": [
+            "@org_golang_x_sys//cpu:go_default_library",
+        ],
+        "//conditions:default": [],
+    }),
+)
+
+go_test(
+    name = "common_test",
+    srcs = [
+        "field_test.go",
+        "ntt_test.go",
+        "pack_test.go",
+        "poly_test.go",
+    ],
+    embed = [":common"],
+)

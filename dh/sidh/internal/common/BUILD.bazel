@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "common",
+    srcs = [
+        "doc.go",
+        "params.go",
+        "types.go",
+        "utils.go",
+    ],
+    importpath = "github.com/cloudflare/circl/dh/sidh/internal/common",
+    visibility = ["//dh/sidh:__subpackages__"],
+)

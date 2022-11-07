@@ -1,0 +1,39 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "goldilocks",
+    srcs = [
+        "constants.go",
+        "curve.go",
+        "isogeny.go",
+        "point.go",
+        "scalar.go",
+        "twist.go",
+        "twistPoint.go",
+        "twistTables.go",
+        "twist_basemult.go",
+    ],
+    importpath = "github.com/cloudflare/circl/ecc/goldilocks",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//internal/conv",
+        "//math",
+        "//math/fp448",
+        "//math/mlsbset",
+    ],
+)
+
+go_test(
+    name = "goldilocks_test",
+    srcs = [
+        "curve_test.go",
+        "isogeny_test.go",
+        "point_test.go",
+        "scalar_test.go",
+    ],
+    embed = [":goldilocks"],
+    deps = [
+        "//internal/conv",
+        "//internal/test",
+    ],
+)

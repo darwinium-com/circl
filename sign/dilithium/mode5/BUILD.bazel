@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "mode5",
+    srcs = ["dilithium.go"],
+    importpath = "github.com/cloudflare/circl/sign/dilithium/mode5",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//sign/dilithium/internal/common",
+        "//sign/dilithium/mode5/internal",
+    ],
+)

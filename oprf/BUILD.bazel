@@ -1,0 +1,32 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "oprf",
+    srcs = [
+        "client.go",
+        "keys.go",
+        "oprf.go",
+        "server.go",
+    ],
+    importpath = "github.com/cloudflare/circl/oprf",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//group",
+        "//zk/dleq",
+    ],
+)
+
+go_test(
+    name = "oprf_test",
+    srcs = [
+        "oprf_test.go",
+        "vectors_test.go",
+    ],
+    data = glob(["testdata/**"]),
+    embed = [":oprf"],
+    deps = [
+        "//group",
+        "//internal/test",
+        "//zk/dleq",
+    ],
+)

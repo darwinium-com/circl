@@ -1,0 +1,31 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "group",
+    srcs = [
+        "group.go",
+        "hash.go",
+        "ristretto255.go",
+        "short.go",
+    ],
+    importpath = "github.com/cloudflare/circl/group",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ecc/p384",
+        "//expander",
+        "//internal/conv",
+        "@com_github_bwesterb_go_ristretto//:go_default_library",
+    ],
+)
+
+go_test(
+    name = "group_test",
+    srcs = [
+        "group_test.go",
+        "hash_test.go",
+        "ristretto255_test.go",
+    ],
+    data = glob(["testdata/**"]),
+    embed = [":group"],
+    deps = ["//internal/test"],
+)

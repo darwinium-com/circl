@@ -1,0 +1,39 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "dilithium",
+    srcs = [
+        "dilithium.go",
+        "mode2.go",
+        "mode2aes.go",
+        "mode3.go",
+        "mode3aes.go",
+        "mode5.go",
+        "mode5aes.go",
+    ],
+    importpath = "github.com/cloudflare/circl/sign/dilithium",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//sign/dilithium/internal/common",
+        "//sign/dilithium/mode2",
+        "//sign/dilithium/mode2aes",
+        "//sign/dilithium/mode3",
+        "//sign/dilithium/mode3aes",
+        "//sign/dilithium/mode5",
+        "//sign/dilithium/mode5aes",
+    ],
+)
+
+go_test(
+    name = "dilithium_test",
+    srcs = [
+        "dilithium_test.go",
+        "example_test.go",
+        "kat_test.go",
+    ],
+    embed = [":dilithium"],
+    deps = [
+        "//internal/nist",
+        "//internal/sha3",
+    ],
+)

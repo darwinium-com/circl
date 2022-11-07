@@ -1,0 +1,30 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "ed448",
+    srcs = [
+        "ed448.go",
+        "signapi.go",
+    ],
+    importpath = "github.com/cloudflare/circl/sign/ed448",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ecc/goldilocks",
+        "//internal/sha3",
+        "//sign",
+    ],
+)
+
+go_test(
+    name = "ed448_test",
+    srcs = [
+        "ed448_test.go",
+        "rfc8032_test.go",
+        "wycheproof_test.go",
+    ],
+    data = glob(["testdata/**"]),
+    deps = [
+        ":ed448",
+        "//internal/test",
+    ],
+)

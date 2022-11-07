@@ -1,0 +1,33 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "sidh",
+    srcs = [
+        "doc.go",
+        "sidh.go",
+        "sike.go",
+    ],
+    importpath = "github.com/cloudflare/circl/dh/sidh",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//dh/sidh/internal/common",
+        "//dh/sidh/internal/p434",
+        "//dh/sidh/internal/p503",
+        "//dh/sidh/internal/p751",
+        "//internal/sha3",
+    ],
+)
+
+go_test(
+    name = "sidh_test",
+    srcs = [
+        "sidh_test.go",
+        "sike_test.go",
+    ],
+    data = glob(["testdata/**"]),
+    embed = [":sidh"],
+    deps = [
+        "//dh/sidh/internal/common",
+        "//internal/test",
+    ],
+)

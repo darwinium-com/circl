@@ -1,0 +1,20 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "expander",
+    srcs = ["expander.go"],
+    importpath = "github.com/cloudflare/circl/expander",
+    visibility = ["//visibility:public"],
+    deps = ["//xof"],
+)
+
+go_test(
+    name = "expander_test",
+    srcs = ["expander_test.go"],
+    data = glob(["testdata/**"]),
+    deps = [
+        ":expander",
+        "//internal/test",
+        "//xof",
+    ],
+)

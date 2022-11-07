@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "dl",
+    srcs = ["dl.go"],
+    importpath = "github.com/cloudflare/circl/zk/dl",
+    visibility = ["//visibility:public"],
+    deps = ["//group"],
+)
+
+go_test(
+    name = "dl_test",
+    srcs = ["dl_test.go"],
+    embed = [":dl"],
+    deps = ["//group"],
+)

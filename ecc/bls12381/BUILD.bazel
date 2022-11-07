@@ -1,0 +1,41 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "bls12381",
+    srcs = [
+        "constants.go",
+        "doc.go",
+        "ec2.go",
+        "g1.go",
+        "g1Isog.go",
+        "g2.go",
+        "g2Isog.go",
+        "gt.go",
+        "pair.go",
+    ],
+    importpath = "github.com/cloudflare/circl/ecc/bls12381",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ecc/bls12381/ff",
+        "//expander",
+    ],
+)
+
+go_test(
+    name = "bls12381_test",
+    srcs = [
+        "encoding_test.go",
+        "g1_test.go",
+        "g2_test.go",
+        "gt_test.go",
+        "hash_test.go",
+        "pair_test.go",
+        "psi_test.go",
+    ],
+    data = glob(["testdata/**"]),
+    embed = [":bls12381"],
+    deps = [
+        "//ecc/bls12381/ff",
+        "//internal/test",
+    ],
+)

@@ -1,0 +1,18 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "kyber",
+    srcs = ["doc.go"],
+    importpath = "github.com/cloudflare/circl/kem/kyber",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "kyber_test",
+    srcs = ["kat_test.go"],
+    embed = [":kyber"],
+    deps = [
+        "//internal/nist",
+        "//kem/schemes",
+    ],
+)

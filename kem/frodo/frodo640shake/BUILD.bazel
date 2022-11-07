@@ -1,0 +1,17 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "frodo640shake",
+    srcs = [
+        "frodo.go",
+        "matrix_shake.go",
+        "noise.go",
+        "util.go",
+    ],
+    importpath = "github.com/cloudflare/circl/kem/frodo/frodo640shake",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//internal/sha3",
+        "//kem",
+    ],
+)

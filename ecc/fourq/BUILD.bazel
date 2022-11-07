@@ -1,0 +1,54 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "fourq",
+    srcs = [
+        "curve.go",
+        "doc.go",
+        "fp.go",
+        "fp_amd64.go",
+        "fp_amd64.h",
+        "fp_amd64.s",
+        "fp_generic.go",
+        "fp_noasm.go",
+        "fq.go",
+        "fq_amd64.go",
+        "fq_amd64.h",
+        "fq_amd64.s",
+        "fq_generic.go",
+        "fq_noasm.go",
+        "params.go",
+        "point.go",
+        "point_amd64.go",
+        "point_amd64.h",
+        "point_amd64.s",
+        "point_generic.go",
+        "point_noasm.go",
+        "tableBase.go",
+    ],
+    importpath = "github.com/cloudflare/circl/ecc/fourq",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//internal/conv",
+    ] + select({
+        "@io_bazel_rules_go//go/platform:amd64": [
+            "@org_golang_x_sys//cpu:go_default_library",
+        ],
+        "//conditions:default": [],
+    }),
+)
+
+go_test(
+    name = "fourq_test",
+    srcs = [
+        "curve_test.go",
+        "fp_test.go",
+        "fq_test.go",
+        "point_test.go",
+    ],
+    embed = [":fourq"],
+    deps = [
+        "//internal/conv",
+        "//internal/test",
+    ],
+)

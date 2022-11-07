@@ -1,0 +1,8 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "kem",
+    srcs = ["kem.go"],
+    importpath = "github.com/cloudflare/circl/kem",
+    visibility = ["//visibility:public"],
+)

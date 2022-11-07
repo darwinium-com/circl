@@ -1,0 +1,18 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "asm_lib",
+    srcs = ["src.go"],
+    importpath = "github.com/cloudflare/circl/simd/keccakf1600/internal/asm",
+    visibility = ["//visibility:private"],
+    deps = [
+        "@com_github_mmcloughlin_avo//build:go_default_library",
+        "@com_github_mmcloughlin_avo//operand:go_default_library",
+    ],
+)
+
+go_binary(
+    name = "asm",
+    embed = [":asm_lib"],
+    visibility = ["//simd/keccakf1600:__subpackages__"],
+)

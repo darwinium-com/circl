@@ -1,0 +1,8 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "nist",
+    srcs = ["drbg.go"],
+    importpath = "github.com/cloudflare/circl/internal/nist",
+    visibility = ["//:__subpackages__"],
+)

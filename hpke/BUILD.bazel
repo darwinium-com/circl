@@ -1,0 +1,42 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "hpke",
+    srcs = [
+        "aead.go",
+        "algs.go",
+        "hpke.go",
+        "kembase.go",
+        "marshal.go",
+        "shortkem.go",
+        "util.go",
+        "xkem.go",
+    ],
+    importpath = "github.com/cloudflare/circl/hpke",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//dh/x25519",
+        "//dh/x448",
+        "//ecc/p384",
+        "//kem",
+        "@org_golang_x_crypto//chacha20poly1305:go_default_library",
+        "@org_golang_x_crypto//cryptobyte:go_default_library",
+        "@org_golang_x_crypto//hkdf:go_default_library",
+    ],
+)
+
+go_test(
+    name = "hpke_test",
+    srcs = [
+        "aead_test.go",
+        "hpke_test.go",
+        "marshal_test.go",
+        "vectors_test.go",
+    ],
+    data = glob(["testdata/**"]),
+    embed = [":hpke"],
+    deps = [
+        "//internal/test",
+        "//kem",
+    ],
+)

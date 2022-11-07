@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "curve4q",
+    srcs = [
+        "curve4Q.go",
+        "doc.go",
+    ],
+    importpath = "github.com/cloudflare/circl/dh/curve4q",
+    visibility = ["//visibility:public"],
+    deps = ["//ecc/fourq"],
+)
+
+go_test(
+    name = "curve4q_test",
+    srcs = ["curve4Q_test.go"],
+    embed = [":curve4q"],
+    deps = ["//internal/test"],
+)

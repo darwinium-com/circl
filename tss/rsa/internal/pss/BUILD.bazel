@@ -1,0 +1,11 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "pss",
+    srcs = [
+        "pss.go",
+        "rsa.go",
+    ],
+    importpath = "github.com/cloudflare/circl/tss/rsa/internal/pss",
+    visibility = ["//tss/rsa:__subpackages__"],
+)

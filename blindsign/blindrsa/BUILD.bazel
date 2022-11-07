@@ -1,0 +1,21 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "blindrsa",
+    srcs = [
+        "blindrsa.go",
+        "pss.go",
+        "rsa.go",
+    ],
+    importpath = "github.com/cloudflare/circl/blindsign/blindrsa",
+    visibility = ["//visibility:public"],
+    deps = ["//blindsign"],
+)
+
+go_test(
+    name = "blindrsa_test",
+    srcs = ["blindrsa_test.go"],
+    data = glob(["testdata/**"]),
+    embed = [":blindrsa"],
+    deps = ["//blindsign"],
+)

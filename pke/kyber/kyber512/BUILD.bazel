@@ -1,0 +1,9 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "kyber512",
+    srcs = ["kyber.go"],
+    importpath = "github.com/cloudflare/circl/pke/kyber/kyber512",
+    visibility = ["//visibility:public"],
+    deps = ["//pke/kyber/kyber512/internal"],
+)

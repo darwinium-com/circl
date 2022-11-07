@@ -1,0 +1,42 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "p503",
+    srcs = [
+        "arith_amd64.s",
+        "arith_arm64.s",
+        "arith_decl.go",
+        "arith_generic.go",
+        "core.go",
+        "curve.go",
+        "doc.go",
+        "fp2.go",
+        "params.go",
+    ],
+    importpath = "github.com/cloudflare/circl/dh/sidh/internal/p503",
+    visibility = ["//dh/sidh:__subpackages__"],
+    deps = [
+        "//dh/sidh/internal/common",
+        "@org_golang_x_sys//cpu:go_default_library",
+    ],
+)
+
+go_test(
+    name = "p503_test",
+    srcs = [
+        "arith_amd64_test.go",
+        "arith_test.go",
+        "curve_test.go",
+        "fp2_test.go",
+        "params_test.go",
+    ],
+    embed = [":p503"],
+    deps = [
+        "//dh/sidh/internal/common",
+    ] + select({
+        "@io_bazel_rules_go//go/platform:amd64": [
+            "@org_golang_x_sys//cpu:go_default_library",
+        ],
+        "//conditions:default": [],
+    }),
+)

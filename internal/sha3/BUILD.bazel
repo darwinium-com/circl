@@ -1,0 +1,28 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "sha3",
+    srcs = [
+        "doc.go",
+        "hashes.go",
+        "keccakf.go",
+        "keccakf_amd64.go",
+        "keccakf_amd64.s",
+        "rc.go",
+        "sha3.go",
+        "sha3_s390x.s",
+        "shake.go",
+        "xor.go",
+        "xor_generic.go",
+        "xor_unaligned.go",
+    ],
+    importpath = "github.com/cloudflare/circl/internal/sha3",
+    visibility = ["//:__subpackages__"],
+)
+
+go_test(
+    name = "sha3_test",
+    srcs = ["sha3_test.go"],
+    data = glob(["testdata/**"]),
+    embed = [":sha3"],
+)

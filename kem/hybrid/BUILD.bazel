@@ -1,0 +1,20 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "hybrid",
+    srcs = [
+        "hybrid.go",
+        "xkem.go",
+    ],
+    importpath = "github.com/cloudflare/circl/kem/hybrid",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//dh/x25519",
+        "//dh/x448",
+        "//internal/sha3",
+        "//kem",
+        "//kem/kyber/kyber1024",
+        "//kem/kyber/kyber512",
+        "//kem/kyber/kyber768",
+    ],
+)

@@ -1,0 +1,29 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "rsa",
+    srcs = [
+        "keyshare.go",
+        "padding.go",
+        "rsa_threshold.go",
+        "signShare.go",
+        "util.go",
+    ],
+    importpath = "github.com/cloudflare/circl/tss/rsa",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//tss/rsa/internal",
+        "//tss/rsa/internal/pss",
+    ],
+)
+
+go_test(
+    name = "rsa_test",
+    srcs = [
+        "keyshare_test.go",
+        "rsa_threshold_test.go",
+        "signShare_test.go",
+        "util_test.go",
+    ],
+    embed = [":rsa"],
+)

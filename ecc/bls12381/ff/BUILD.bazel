@@ -1,0 +1,39 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "ff",
+    srcs = [
+        "common.go",
+        "cyclo6.go",
+        "doc.go",
+        "fp.go",
+        "fp12.go",
+        "fp12cubic.go",
+        "fp2.go",
+        "fp4.go",
+        "fp6.go",
+        "fpMont381.go",
+        "scMont255.go",
+        "scalar.go",
+        "uroot.go",
+    ],
+    importpath = "github.com/cloudflare/circl/ecc/bls12381/ff",
+    visibility = ["//visibility:public"],
+    deps = ["//internal/conv"],
+)
+
+go_test(
+    name = "ff_test",
+    srcs = [
+        "cyclo6_test.go",
+        "fp12_test.go",
+        "fp12cubic_test.go",
+        "fp2_test.go",
+        "fp6_test.go",
+        "fp_test.go",
+        "scalar_test.go",
+        "uroot_test.go",
+    ],
+    embed = [":ff"],
+    deps = ["//internal/test"],
+)

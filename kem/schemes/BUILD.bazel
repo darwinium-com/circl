@@ -1,0 +1,23 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "schemes",
+    srcs = ["schemes.go"],
+    importpath = "github.com/cloudflare/circl/kem/schemes",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//hpke",
+        "//kem",
+        "//kem/frodo/frodo640shake",
+        "//kem/hybrid",
+        "//kem/kyber/kyber1024",
+        "//kem/kyber/kyber512",
+        "//kem/kyber/kyber768",
+    ],
+)
+
+go_test(
+    name = "schemes_test",
+    srcs = ["schemes_test.go"],
+    deps = [":schemes"],
+)

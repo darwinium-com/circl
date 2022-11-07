@@ -1,0 +1,34 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "internal",
+    srcs = [
+        "dilithium.go",
+        "mat.go",
+        "pack.go",
+        "params.go",
+        "rounding.go",
+        "sample.go",
+        "vec.go",
+    ],
+    importpath = "github.com/cloudflare/circl/sign/dilithium/mode2aes/internal",
+    visibility = ["//sign/dilithium/mode2aes:__subpackages__"],
+    deps = [
+        "//internal/sha3",
+        "//sign/dilithium/internal/common",
+        "//simd/keccakf1600",
+    ],
+)
+
+go_test(
+    name = "internal_test",
+    srcs = [
+        "dilithium_test.go",
+        "pack_test.go",
+        "params_test.go",
+        "rounding_test.go",
+        "sample_test.go",
+    ],
+    embed = [":internal"],
+    deps = ["//sign/dilithium/internal/common"],
+)

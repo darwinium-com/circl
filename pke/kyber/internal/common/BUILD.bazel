@@ -1,0 +1,39 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "common",
+    srcs = [
+        "amd64.go",
+        "amd64.s",
+        "field.go",
+        "generic.go",
+        "ntt.go",
+        "params.go",
+        "poly.go",
+        "sample.go",
+        "stubs_amd64.go",
+    ],
+    importpath = "github.com/cloudflare/circl/pke/kyber/internal/common",
+    visibility = ["//pke/kyber:__subpackages__"],
+    deps = [
+        "//internal/sha3",
+        "//pke/kyber/internal/common/params",
+        "//simd/keccakf1600",
+    ] + select({
+        "@io_bazel_rules_go//go/platform:amd64": [
+            "@org_golang_x_sys//cpu:go_default_library",
+        ],
+        "//conditions:default": [],
+    }),
+)
+
+go_test(
+    name = "common_test",
+    srcs = [
+        "field_test.go",
+        "ntt_test.go",
+        "poly_test.go",
+        "sample_test.go",
+    ],
+    embed = [":common"],
+)

@@ -1,0 +1,30 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "keccakf1600",
+    srcs = [
+        "f1600x.go",
+        "f1600x2_arm64.go",
+        "f1600x2_arm64.s",
+        "f1600x4_amd64.go",
+        "f1600x4_amd64.s",
+        "f1600x4stubs_amd64.go",
+        "fallback.go",
+    ],
+    importpath = "github.com/cloudflare/circl/simd/keccakf1600",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//internal/sha3",
+        "@org_golang_x_sys//cpu:go_default_library",
+    ],
+)
+
+go_test(
+    name = "keccakf1600_test",
+    srcs = [
+        "example_test.go",
+        "f1600x_test.go",
+    ],
+    embed = [":keccakf1600"],
+    deps = ["//internal/sha3"],
+)

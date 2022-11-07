@@ -1,0 +1,26 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "eddilithium2",
+    srcs = [
+        "eddilithium.go",
+        "signapi.go",
+    ],
+    importpath = "github.com/cloudflare/circl/sign/eddilithium2",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//internal/sha3",
+        "//sign",
+        "//sign/dilithium/mode2",
+        "//sign/ed25519",
+    ],
+)
+
+go_test(
+    name = "eddilithium2_test",
+    srcs = [
+        "eddilithium_test.go",
+        "example_test.go",
+    ],
+    deps = [":eddilithium2"],
+)

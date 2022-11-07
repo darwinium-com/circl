@@ -1,0 +1,37 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "csidh",
+    srcs = [
+        "consts.go",
+        "csidh.go",
+        "curve.go",
+        "doc.go",
+        "fp511.go",
+        "fp511_amd64.go",
+        "fp511_amd64.s",
+        "fp511_generic.go",
+        "fp511_noasm.go",
+    ],
+    importpath = "github.com/cloudflare/circl/dh/csidh",
+    visibility = ["//visibility:public"],
+    deps = select({
+        "@io_bazel_rules_go//go/platform:amd64": [
+            "@org_golang_x_sys//cpu:go_default_library",
+        ],
+        "//conditions:default": [],
+    }),
+)
+
+go_test(
+    name = "csidh_test",
+    srcs = [
+        "csidh_test.go",
+        "curve_test.go",
+        "fp511_test.go",
+        "utils_test.go",
+    ],
+    data = glob(["testdata/**"]),
+    embed = [":csidh"],
+    deps = ["//internal/test"],
+)

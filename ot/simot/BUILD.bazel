@@ -1,0 +1,22 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "simot",
+    srcs = [
+        "simotlocal.go",
+        "simotparty.go",
+    ],
+    importpath = "github.com/cloudflare/circl/ot/simot",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//group",
+        "@org_golang_x_crypto//sha3:go_default_library",
+    ],
+)
+
+go_test(
+    name = "simot_test",
+    srcs = ["simot_test.go"],
+    embed = [":simot"],
+    deps = ["//group"],
+)

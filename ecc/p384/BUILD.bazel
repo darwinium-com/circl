@@ -1,0 +1,43 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "p384",
+    srcs = [
+        "arith.go",
+        "arith_amd64.go",
+        "arith_amd64.s",
+        "arith_arm64.s",
+        "doc.go",
+        "p384.go",
+        "p384_generic.go",
+        "p384opt.go",
+        "point.go",
+        "tableBase.go",
+    ],
+    importpath = "github.com/cloudflare/circl/ecc/p384",
+    visibility = ["//visibility:public"],
+    deps = select({
+        "@io_bazel_rules_go//go/platform:amd64": [
+            "//internal/conv",
+            "//math",
+            "@org_golang_x_sys//cpu:go_default_library",
+        ],
+        "@io_bazel_rules_go//go/platform:arm64": [
+            "//internal/conv",
+            "//math",
+        ],
+        "//conditions:default": [],
+    }),
+)
+
+go_test(
+    name = "p384_test",
+    srcs = [
+        "arith_test.go",
+        "opt_test.go",
+        "p384_test.go",
+        "point_test.go",
+    ],
+    embed = [":p384"],
+    deps = ["//internal/test"],
+)

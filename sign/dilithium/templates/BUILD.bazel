@@ -1,0 +1,11 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "templates",
+    srcs = [
+        "mode.templ.go",
+        "modePkg.templ.go",
+    ],
+    importpath = "github.com/cloudflare/circl/sign/dilithium/templates",
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,41 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "ed25519",
+    srcs = [
+        "ed25519.go",
+        "modular.go",
+        "mult.go",
+        "point.go",
+        "pubkey.go",
+        "pubkey112.go",
+        "signapi.go",
+        "tables.go",
+    ],
+    importpath = "github.com/cloudflare/circl/sign/ed25519",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//internal/conv",
+        "//math",
+        "//math/fp25519",
+        "//sign",
+    ],
+)
+
+go_test(
+    name = "ed25519_test",
+    srcs = [
+        "ed25519_test.go",
+        "extra_test.go",
+        "modular_test.go",
+        "point_test.go",
+        "rfc8032_test.go",
+        "wycheproof_test.go",
+    ],
+    data = glob(["testdata/**"]),
+    embed = [":ed25519"],
+    deps = [
+        "//internal/conv",
+        "//internal/test",
+    ],
+)
